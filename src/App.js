@@ -18,17 +18,17 @@ class App extends Component {
       "826265862385-p41e559ccssujlfsf49ppmo0gktkf6co.apps.googleusercontent.com";
     this.spreadsheetId =
       process.env.REACT_APP_SHEET_ID ||
-      "1eYrQf0xhs2mTSWEzQRfSM-MD-tCcx1r0NVEacLg3Jrc";
+      "1LSCaUxqBpe-PHkk4lE68lmkJKDkg4q0jH7ubx8dLFec";
 
     this.state = {
       signedIn: undefined,
       accounts: [],
-      categories: [],
+      // categories: [],
       expenses: [],
       processing: true,
       expense: {},
-      currentMonth: undefined,
-      previousMonth: undefined,
+      currentMonthTotalUse: undefined,
+      currentMonthTotalSaving: undefined,
       showExpenseForm: false
     };
 
@@ -71,12 +71,12 @@ class App extends Component {
     submitAction(this.state.expense).then(
       response => {
         this.snackbar.show({
-          message: `Expense ${this.state.expense.id ? "updated" : "added"}!`
+          message: `내역이 ${this.state.expense.id ? "수정되었습니다." : "추가되었습니다."}`
         });
         this.load();
       },
       response => {
-        console.error("Something went wrong");
+        console.error("오류가 발생했습니다.");
         console.error(response);
         this.setState({ loading: false });
       }
@@ -112,7 +112,7 @@ class App extends Component {
       })
       .then(
         response => {
-          this.snackbar.show({ message: "Expense deleted!" });
+          this.snackbar.show({ message: "내역이 삭제되었습니다." });
           this.load();
         },
         response => {
@@ -143,24 +143,19 @@ class App extends Component {
           : now.getMonth() + 1}-${now.getDate() < 10
           ? "0" + now.getDate()
           : now.getDate()}`,
-        category: this.state.categories[0],
+        // category: this.state.categories[0],
         account: this.state.accounts[0]
       }
     });
   }
 
   parseExpense(value, index) {
-    const dateParts = value[0].split("/");
     return {
       id: `Expenses!A${index + 2}`,
-      date: `20${dateParts[2]}-${dateParts[1].length === 1
-        ? "0" + dateParts[1]
-        : dateParts[1]}-${dateParts[0].length === 1
-        ? "0" + dateParts[0]
-        : dateParts[0]}`,
+      date: value[0],
       description: value[1],
-      category: value[3],
-      amount: value[4].replace(",", ""),
+      // category: value[3],
+      amount: value[3].replace(",", ""),
       account: value[2]
     };
   }
@@ -173,7 +168,7 @@ class App extends Component {
       )}, ${expense.date.substr(-2)})`,
       expense.description,
       expense.account,
-      expense.category,
+      // expense.category,
       expense.amount
     ];
   }
@@ -202,30 +197,28 @@ class App extends Component {
       .batchGet({
         spreadsheetId: this.spreadsheetId,
         ranges: [
-          "Data!A2:A50",
-          "Data!E2:E50",
+          "Expenses!G2:G50",
           "Expenses!A2:F",
-          "Current!H1",
-          "Previous!H1"
+          "Expenses!H2",
+          "Expenses!H3",
         ]
       })
       .then(response => {
         const accounts = response.result.valueRanges[0].values.map(
           items => items[0]
         );
-        const categories = response.result.valueRanges[1].values.map(
-          items => items[0]
-        );
+        // const categories = response.result.valueRanges[1].values.map(
+        //   items => items[0]
+        // );
         this.setState({
           accounts: accounts,
-          categories: categories,
-          expenses: (response.result.valueRanges[2].values || [])
+          expenses: (response.result.valueRanges[1].values || [])
             .map(this.parseExpense)
             .reverse()
             .slice(0, 15),
           processing: false,
-          currentMonth: response.result.valueRanges[3].values[0][0],
-          previousMonth: response.result.valueRanges[4].values[0][0]
+          currentMonthTotalUse: response.result.valueRanges[2].values[0][0],
+          currentMonthTotalSaving: response.result.valueRanges[3].values[0][0]
         });
       });
   }
@@ -236,7 +229,7 @@ class App extends Component {
         <header className="mdc-toolbar mdc-toolbar--fixed">
           <div className="mdc-toolbar__row">
             <section className="mdc-toolbar__section mdc-toolbar__section--align-start">
-              <span className="mdc-toolbar__title">Expenses</span>
+              <span className="mdc-toolbar__title">심원사 회계장부</span>
             </section>
             <section
               className="mdc-toolbar__section mdc-toolbar__section--align-end"
@@ -280,7 +273,7 @@ class App extends Component {
                   window.gapi.auth2.getAuthInstance().signIn();
                 }}
               >
-                Sign In
+                로그인
               </button>
             </div>}
           {this.state.signedIn && this.renderBody()}
@@ -337,13 +330,14 @@ class App extends Component {
         <div>
           <div className="mdc-card">
             <section className="mdc-card__primary">
-              <h2 className="mdc-card__subtitle">This month you've spent:</h2>
+              <h2 className="mdc-card__subtitle">이번달 수입:</h2>
               <h1 className="mdc-card__title mdc-card__title--large center">
-                {this.state.currentMonth}
+                {this.state.currentMonthTotalSaving}
               </h1>
-            </section>
-            <section className="mdc-card__supporting-text">
-              Previous month: {this.state.previousMonth}
+              <h2 className="mdc-card__subtitle">이번달 지출:</h2>
+              <h1 className="mdc-card__supporting-text mdc-card__title--large center">
+                {this.state.currentMonthTotalUse}
+              </h1>
             </section>
           </div>
           <ExpenseList

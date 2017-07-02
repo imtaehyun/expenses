@@ -15,7 +15,7 @@ class ExpenseForm extends Component {
     super(props);
 
     this.state = { isValid: false };
-    
+
   }
 
   handleInputChange = (event) => {
@@ -67,24 +67,24 @@ class ExpenseForm extends Component {
           <div className="mdc-dialog__surface">
             <header className="mdc-dialog__header">
               <h2 className="mdc-dialog__header__title">
-                Are you sure?
+                삭제확인
               </h2>
             </header>
             <section className="mdc-dialog__body">
-              Do you really want to delete the expense?
+              해당 내역을 삭제하시겠습니까?
             </section>
             <footer className="mdc-dialog__footer">
               <button
                 type="button"
                 className="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel"
               >
-                Cancel
+                취소
               </button>
               <button
                 type="button"
                 className="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept"
               >
-                Delete
+                삭제
               </button>
             </footer>
           </div>
@@ -100,28 +100,14 @@ class ExpenseForm extends Component {
               value={this.props.expense.amount}
               onChange={this.handleInputChange}
               type="number"
-              step="0.01"
+              step="1"
               min="0"
               required
             />
-            <label className="mdc-textfield__label">Amount</label>
+            <label className="mdc-textfield__label">금액</label>
           </div>
         </div>
-
-        <div className="mdc-form-field">
-          <select
-            name="category"
-            className="mdc-select"
-            value={this.props.expense.category}
-            onChange={this.handleInputChange}
-            required
-          >
-            {this.props.categories.map(category =>
-              <option value={category} key={category}>{category}</option>
-            )}
-          </select>
-        </div>
-
+        
         <div className="mdc-form-field">
           <div className="mdc-textfield">
             <input
@@ -131,7 +117,7 @@ class ExpenseForm extends Component {
               onChange={this.handleInputChange}
               type="text"
             />
-            <label className="mdc-textfield__label">Description</label>
+            <label className="mdc-textfield__label">설명</label>
           </div>
         </div>
 
@@ -145,7 +131,7 @@ class ExpenseForm extends Component {
               type="date"
               required
             />
-            <label className="mdc-textfield__label">Date</label>
+            <label className="mdc-textfield__label">날짜</label>
           </div>
         </div>
 
@@ -167,7 +153,7 @@ class ExpenseForm extends Component {
           <input
             type="submit"
             className="mdc-button"
-            value={this.props.expense.id ? "Update" : "Add"}
+            value={this.props.expense.id ? "수정" : "추가"}
             disabled={!this.state.isValid}
           />
           {this.props.expense.id &&
@@ -175,13 +161,13 @@ class ExpenseForm extends Component {
               type="button"
               className="mdc-button"
               onClick={() => this.dialog.show()}
-              value="Delete"
+              value="삭제"
             />}
           <input
             type="button"
             className="mdc-button"
             onClick={() => this.props.onCancel()}
-            value="Close"
+            value="닫기"
           />
         </div>
       </form>
