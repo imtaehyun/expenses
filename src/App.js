@@ -15,7 +15,7 @@ class App extends Component {
     super();
 
     this.clientId =
-      "826265862385-p41e559ccssujlfsf49ppmo0gktkf6co.apps.googleusercontent.com";
+      "970059223185-bkdbpmoqvg3asg25thj918hsv9469jj7.apps.googleusercontent.com";
     this.spreadsheetId =
       process.env.REACT_APP_SHEET_ID ||
       "1LSCaUxqBpe-PHkk4lE68lmkJKDkg4q0jH7ubx8dLFec";
@@ -197,19 +197,16 @@ class App extends Component {
       .batchGet({
         spreadsheetId: this.spreadsheetId,
         ranges: [
-          "Expenses!G2:G50",
+          "Data!A2:A50",
           "Expenses!A2:F",
-          "Expenses!H2",
-          "Expenses!H3",
+          "Data!B2",
+          "Data!B3",
         ]
       })
       .then(response => {
         const accounts = response.result.valueRanges[0].values.map(
           items => items[0]
         );
-        // const categories = response.result.valueRanges[1].values.map(
-        //   items => items[0]
-        // );
         this.setState({
           accounts: accounts,
           expenses: (response.result.valueRanges[1].values || [])
@@ -229,7 +226,7 @@ class App extends Component {
         <header className="mdc-toolbar mdc-toolbar--fixed">
           <div className="mdc-toolbar__row">
             <section className="mdc-toolbar__section mdc-toolbar__section--align-start">
-              <span className="mdc-toolbar__title">심원사 회계장부</span>
+              <span className="mdc-toolbar__title">안양암 회계장부</span>
             </section>
             <section
               className="mdc-toolbar__section mdc-toolbar__section--align-end"
